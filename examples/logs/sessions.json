@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-09-14T16:42:10-04:00",
+  "sessions": {
+    "8f3c2a1e-5b7d-4e2a-9c61-0d4f7a2b9e13": {
+      "session_id": "8f3c2a1e-5b7d-4e2a-9c61-0d4f7a2b9e13",
+      "status": "ended",
+      "title": "Fix pagination bug in example-api",
+      "started_at": "2026-09-14T15:58:02-04:00",
+      "ended_at": "2026-09-14T16:42:10-04:00",
+      "duration_minutes": 44.1,
+      "last_activity_at": "2026-09-14T16:42:10-04:00",
+      "start_source": "startup",
+      "end_reason": "prompt_input_exit",
+      "cwd": "/home/dev/acme-workspace",
+      "entrypoint": "cli",
+      "git_branch": "main",
+      "permission_mode": "default",
+      "effort": "high",
+      "claude_code_versions": ["2.9.4"],
+      "models": {
+        "claude-model-main": 37,
+        "claude-model-small": 4
+      },
+      "prompts": 6,
+      "tool_calls": 58,
+      "tool_failures": 3,
+      "interrupts": 1,
+      "compactions": 0,
+      "tools": {
+        "Read": 19,
+        "Grep": 9,
+        "Edit": 8,
+        "Bash": 17,
+        "Agent": 3,
+        "Glob": 2
+      },
+      "subagents": {
+        "app-explorer": 1,
+        "test-runner": 1,
+        "code-reviewer": 1
+      },
+      "apps": {
+        "example-api": 51,
+        "workspace": 7
+      },
+      "tokens": {
+        "main": { "input": 41250, "output": 18940, "cache_read": 1823400, "cache_write": 96210 },
+        "subagents": { "input": 12880, "output": 5310, "cache_read": 402150, "cache_write": 31870 }
+      },
+      "transcript": {
+        "path": "/home/dev/.claude/projects/acme-workspace/8f3c2a1e.jsonl",
+        "bytes_scanned": 1482331,
+        "last_request_id": "req_synthetic_0041",
+        "last_request_usage": { "input": 6, "output": 412, "cache_read": 88120, "cache_write": 1340 }
+      }
+    },
+    "c41d9b07-2e6a-4f18-8a3b-7e5c0f9d2a64": {
+      "session_id": "c41d9b07-2e6a-4f18-8a3b-7e5c0f9d2a64",
+      "status": "active",
+      "title": null,
+      "started_at": "2026-09-14T16:30:45-04:00",
+      "ended_at": null,
+      "duration_minutes": null,
+      "last_activity_at": "2026-09-14T16:39:12-04:00",
+      "start_source": "startup",
+      "end_reason": null,
+      "cwd": "/home/dev/acme-workspace",
+      "entrypoint": null,
+      "git_branch": null,
+      "permission_mode": "acceptEdits",
+      "effort": null,
+      "claude_code_versions": [],
+      "models": { "claude-model-main": 0 },
+      "prompts": 2,
+      "tool_calls": 11,
+      "tool_failures": 0,
+      "interrupts": 0,
+      "compactions": 0,
+      "tools": { "WebSearch": 4, "WebFetch": 6, "Agent": 1 },
+      "subagents": { "researcher": 1 },
+      "apps": { "workspace": 11 },
+      "tokens": {
+        "main": { "input": 0, "output": 0, "cache_read": 0, "cache_write": 0 },
+        "subagents": { "input": 0, "output": 0, "cache_read": 0, "cache_write": 0 }
+      },
+      "transcript": {
+        "path": "/home/dev/.claude/projects/acme-workspace/c41d9b07.jsonl",
+        "bytes_scanned": 0,
+        "last_request_id": null,
+        "last_request_usage": null
+      }
+    }
+  }
+}

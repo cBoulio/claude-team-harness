@@ -1,0 +1,15 @@
+[project]
+name = "claude-team-harness"
+version = "0.1.0"
+description = "A template for a shared Claude Code workspace where a team manages several apps."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q -p no:cacheprovider"

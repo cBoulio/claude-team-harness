@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Choosing a vector store for a small team</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #05070d; --panel: #0d1424cc; --line: #1b2a4a;
+  --text: #c9d6ee; --dim: #7d8db0; --cyan: #00f0ff; --mag: #ff2bd6; --lime: #9dff3c;
+  --amber: #ffb02e; --red: #ff3b5c; --violet: #9b6bff; --head: #eaf6ff;
+  --mono: "JetBrains Mono", "Cascadia Code", Consolas, monospace;
+  --display: "Orbitron", "JetBrains Mono", Consolas, sans-serif;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; background: var(--bg); color: var(--text); font: 15px/1.7 var(--mono);
+  background-image:
+    linear-gradient(rgba(0,240,255,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,240,255,.035) 1px, transparent 1px),
+    radial-gradient(ellipse at top, #0c1a3a 0%, var(--bg) 60%);
+  background-size: 40px 40px, 40px 40px, 100% 100%;
+  background-attachment: fixed;
+}
+a { color: var(--cyan); text-decoration: none; border-bottom: 1px dashed rgba(0,240,255,.4); }
+a:hover { color: var(--mag); border-bottom-color: var(--mag); }
+.topbar {
+  position: sticky; top: 0; z-index: 40; display: flex; align-items: center; gap: 16px;
+  padding: 10px 24px; background: rgba(5,7,13,.88); backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line); font-size: 12px; letter-spacing: .12em; text-transform: uppercase;
+}
+.topbar .brand { font-family: var(--display); color: var(--cyan); border: 0; }
+.topbar .path { color: var(--dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 32px 24px 80px; }
+.hero { position: relative; padding: 28px 28px 24px; margin-bottom: 28px; border: 1px solid var(--line);
+  background: linear-gradient(135deg, rgba(0,240,255,.07), rgba(255,43,214,.05)); }
+.hero::before { content: ""; position: absolute; left: 0; top: 0; width: 120px; height: 2px; background: var(--cyan); }
+.kicker { color: var(--mag); font-size: 12px; letter-spacing: .3em; text-transform: uppercase; }
+h1.title { font-family: var(--display); font-size: clamp(26px, 4vw, 40px); line-height: 1.15; margin: 8px 0 14px; color: var(--head); }
+.meta { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border: 1px solid var(--line); color: var(--dim); background: rgba(13,20,36,.8); }
+.chip.status-final { color: var(--lime); border-color: rgba(157,255,60,.5); }
+.chip.status-draft { color: var(--amber); border-color: rgba(255,176,46,.5); }
+.chip.status-superseded { color: var(--red); border-color: rgba(255,59,92,.5); }
+.chip.tag { color: var(--cyan); border-color: rgba(0,240,255,.35); }
+.summary { margin: 16px 0 0; color: #dbe7ff; max-width: 80ch; }
+.layout { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 32px; align-items: start; }
+.toc { position: sticky; top: 64px; max-height: calc(100vh - 90px); overflow: auto; padding: 16px; border: 1px solid var(--line); background: var(--panel); font-size: 12.5px; }
+.toc::before { content: "// CONTENTS"; display: block; color: var(--mag); letter-spacing: .25em; font-size: 11px; margin-bottom: 8px; }
+.toc ul { list-style: none; margin: 0; padding-left: 10px; }
+.toc > div > ul { padding-left: 0; }
+.toc li { margin: 4px 0; }
+.toc a { border: 0; color: var(--dim); }
+.toc a:hover { color: var(--cyan); }
+article { min-width: 0; padding: 8px 32px 32px; border: 1px solid var(--line); background: var(--panel); }
+article h2 { font-family: var(--display); font-size: 21px; color: var(--cyan); margin: 40px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--line); letter-spacing: .04em; }
+article h3 { font-size: 16px; color: var(--head); margin: 28px 0 8px; }
+.headerlink { opacity: 0; margin-left: 8px; border: 0; font-size: .8em; }
+h2:hover .headerlink, h3:hover .headerlink { opacity: .6; }
+strong { color: #ffffff; }
+code { font-family: var(--mono); font-size: .9em; color: var(--lime); background: rgba(157,255,60,.07); padding: 1px 5px; border: 1px solid rgba(157,255,60,.15); }
+pre { overflow: auto; padding: 14px 16px; background: #03050a; border: 1px solid var(--line); border-left: 3px solid var(--mag); }
+pre code { background: none; border: 0; padding: 0; color: #b8ffd0; }
+ul, ol { padding-left: 22px; }
+li::marker { color: var(--mag); }
+hr { border: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--cyan), transparent); margin: 32px 0; }
+.table-wrap { overflow-x: auto; margin: 16px 0; border: 1px solid var(--line); }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { text-align: left; color: var(--cyan); background: rgba(0,240,255,.07); text-transform: uppercase; letter-spacing: .08em; font-size: 11.5px; }
+th, td { padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+blockquote { margin: 16px 0; padding: 10px 16px; border-left: 3px solid var(--violet); background: rgba(155,107,255,.07); color: #dcd2ff; }
+blockquote p { margin: 6px 0; }
+.callout-label { display: inline-block; margin-right: 10px; font-size: 11px; letter-spacing: .2em; font-weight: 700; }
+.callout.note { border-color: var(--cyan); background: rgba(0,240,255,.06); } .callout.note .callout-label { color: var(--cyan); }
+.callout.tip { border-color: var(--lime); background: rgba(157,255,60,.06); } .callout.tip .callout-label { color: var(--lime); }
+.callout.warning { border-color: var(--amber); background: rgba(255,176,46,.07); } .callout.warning .callout-label { color: var(--amber); }
+.callout.risk { border-color: var(--red); background: rgba(255,59,92,.08); } .callout.risk .callout-label { color: var(--red); }
+.callout.verdict { border-color: var(--mag); background: rgba(255,43,214,.08); } .callout.verdict .callout-label { color: var(--mag); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); gap: 18px; }
+.card { display: block; padding: 18px 18px 16px; border: 1px solid var(--line); background: var(--panel); color: var(--text); transition: border-color .2s, transform .2s; }
+.card:hover { border-color: var(--cyan); color: var(--text); transform: translateY(-2px); }
+.card h2 { font-family: var(--display); font-size: 17px; color: var(--head); margin: 6px 0 8px; line-height: 1.3; }
+.card p { color: var(--dim); font-size: 13px; margin: 0 0 12px; }
+.card .date { color: var(--mag); font-size: 11px; letter-spacing: .2em; }
+.empty { color: var(--dim); padding: 40px; border: 1px dashed var(--line); text-align: center; }
+footer { margin-top: 40px; color: var(--dim); font-size: 11px; letter-spacing: .15em; text-transform: uppercase; text-align: center; }
+@media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .toc { position: static; max-height: none; } article { padding: 4px 16px 24px; } .wrap { padding: 20px 16px 60px; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+<div class="topbar"><a class="brand" href="index.html">Workspace // research</a><span class="path">/ 2026-10-01-choosing-a-vector-store</span></div>
+<div class="wrap">
+<header class="hero">
+<div class="kicker">// research dossier</div>
+<h1 class="title">Choosing a vector store for a small team</h1>
+<div class="meta"><span class="chip">2026-10-01</span><span class="chip status-final">final</span><span class="chip">by researcher</span><span class="chip">4 min read</span><span class="chip tag">#search</span><span class="chip tag">#embeddings</span><span class="chip tag">#databases</span><span class="chip tag">#sample</span></div>
+<p class="summary">If you already run Postgres, start with pgvector. Reach for a dedicated vector database only when you outgrow it or need features Postgres can&#x27;t give you.</p>
+</header>
+<div class="layout">
+<nav class="toc"><div><ul><li><a href="#bottom-line">Bottom line</a></li><li><a href="#what-the-team-needs">What the team needs</a></li><li><a href="#options-compared">Options compared</a><ul><li><a href="#why-pgvector-first">Why pgvector first</a></li><li><a href="#when-to-move-off-it">When to move off it</a></li></ul></li><li><a href="#hybrid-search">Hybrid search</a></li><li><a href="#recommended-next-steps">Recommended next steps</a></li><li><a href="#sources">Sources</a></li></ul></div></nav>
+<article><blockquote class="callout note"><p><span class="callout-label">NOTE</span>This is a sample dossier that ships with the template to show what the research renderer
+produces. The team and workload are fictional. Check current docs and pricing before relying
+on any of it.</p></blockquote>
+<h2 id="bottom-line">Bottom line<a class="headerlink" href="#bottom-line" title="Link to this section">#</a></h2>
+<ul><li>The fictional team (four engineers, one Postgres database, about 2 million chunks of support
+articles and tickets) does not need a new database to get good semantic search.</li><li><strong>pgvector</strong> keeps embeddings next to the rows they describe, so filters, joins, backups, and
+access control stay in one place [1].</li><li><strong>sqlite-vec</strong> is a good fit for local tools, CLIs, and tests where a server is overkill [2].</li><li>A dedicated engine (<strong>Qdrant</strong>, <strong>Chroma</strong>, or a managed service like <strong>Pinecone</strong>) earns its
+keep when the corpus or query load grows well past what one Postgres instance handles
+comfortably, or when you need features like built-in hybrid scoring or multi-tenant
+collections out of the box [3][4][5].</li><li>Whatever you pick, put retrieval behind a small interface so you can swap the store later.</li></ul>
+<blockquote class="callout verdict"><p><span class="callout-label">VERDICT</span>Start with pgvector and an HNSW index on the existing Postgres. Re-evaluate when p95 query
+latency or index build time stops meeting the target, not before.</p></blockquote>
+<h2 id="what-the-team-needs">What the team needs<a class="headerlink" href="#what-the-team-needs" title="Link to this section">#</a></h2>
+<div class="table-wrap"><table><thead><tr><th>Requirement</th><th>Detail</th><th style="text-align:right">Weight</th></tr></thead><tbody><tr><td>Corpus size</td><td>about 2M chunks today, growing roughly 30% a year</td><td style="text-align:right">high</td></tr><tr><td>Latency</td><td>p95 under 150 ms for top-10 retrieval</td><td style="text-align:right">high</td></tr><tr><td>Filtering</td><td>by product, customer tier, and date</td><td style="text-align:right">high</td></tr><tr><td>Operations</td><td>no new on-call surface if avoidable</td><td style="text-align:right">high</td></tr><tr><td>Hybrid search</td><td>keyword plus vector ranking</td><td style="text-align:right">medium</td></tr><tr><td>Budget</td><td>modest; prefer existing infrastructure</td><td style="text-align:right">medium</td></tr></tbody></table></div>
+<h2 id="options-compared">Options compared<a class="headerlink" href="#options-compared" title="Link to this section">#</a></h2>
+<div class="table-wrap"><table><thead><tr><th>Option</th><th>What it is</th><th>Fits when</th><th>Watch out for</th></tr></thead><tbody><tr><td>pgvector</td><td>Postgres extension with vector types and HNSW / IVFFlat indexes [1]</td><td>You already run Postgres and want one source of truth</td><td>Index memory, build time on large tables, tuning <code>ef_search</code></td></tr><tr><td>sqlite-vec</td><td>SQLite extension for vector search [2]</td><td>Local tools, embedded apps, test fixtures</td><td>Single-writer database; not a shared service</td></tr><tr><td>Qdrant</td><td>Open-source vector database with filtering and payloads; managed cloud available [3]</td><td>Large corpora, heavy filtering, dedicated search service</td><td>Another system to run, back up, and secure</td></tr><tr><td>Chroma</td><td>Open-source embedding database, easy to embed in Python apps [4]</td><td>Prototypes and small services</td><td>Check production deployment options for your scale</td></tr><tr><td>Pinecone</td><td>Fully managed vector database [5]</td><td>You want zero operations and accept a vendor</td><td>Data residency, cost at scale, lock-in</td></tr></tbody></table></div>
+<h3 id="why-pgvector-first">Why pgvector first<a class="headerlink" href="#why-pgvector-first" title="Link to this section">#</a></h3>
+<p>Most of the team's queries filter by product and customer tier before ranking by similarity.
+With pgvector those filters are ordinary <code>WHERE</code> clauses on the same table, and permissions
+follow the rules the app already has. A dedicated store would need those attributes copied
+into its payloads and kept in sync.</p>
+<pre><code class="language-sql">CREATE EXTENSION IF NOT EXISTS vector;
+ALTER TABLE chunks ADD COLUMN embedding vector(1024);
+CREATE INDEX ON chunks USING hnsw (embedding vector_cosine_ops);
+
+SELECT id, title
+FROM chunks
+WHERE product = &#x27;billing&#x27; AND tier = &#x27;enterprise&#x27;
+ORDER BY embedding &lt;=&gt; $1
+LIMIT 10;</code></pre>
+<blockquote class="callout tip"><p><span class="callout-label">TIP</span>Build the HNSW index after the initial bulk load, not before, and raise
+<code>maintenance_work_mem</code> for the build. Both cut index build time noticeably [1].</p></blockquote>
+<h3 id="when-to-move-off-it">When to move off it<a class="headerlink" href="#when-to-move-off-it" title="Link to this section">#</a></h3>
+<p>Plan a move to a dedicated engine if any of these hold for more than a few weeks:</p>
+<ol><li>p95 retrieval latency exceeds the target after index tuning.</li><li>Index builds or vacuum on the embeddings table interfere with the app's normal traffic.</li><li>You need per-tenant isolation or replication patterns that are awkward in Postgres.</li></ol>
+<blockquote class="callout risk"><p><span class="callout-label">RISK</span>Embeddings from different models are not interchangeable. Changing the embedding model means
+re-embedding the whole corpus, whichever store you use. Record the model name and version
+with every vector.</p></blockquote>
+<h2 id="hybrid-search">Hybrid search<a class="headerlink" href="#hybrid-search" title="Link to this section">#</a></h2>
+<p>Keyword matching still wins for exact identifiers such as error codes and SKUs. In Postgres,
+combine a full-text <code>tsvector</code> rank with vector similarity and merge the two result lists
+(reciprocal rank fusion is a simple, robust choice). Dedicated engines often provide this
+directly; check that their scoring is explainable enough for your support team.</p>
+<blockquote class="callout warning"><p><span class="callout-label">WARNING</span>Don't judge options on public benchmark charts alone. Run your own queries against a
+sample of your own data, with your filters, and measure recall against a small labeled set.</p></blockquote>
+<h2 id="recommended-next-steps">Recommended next steps<a class="headerlink" href="#recommended-next-steps" title="Link to this section">#</a></h2>
+<ol><li>Enable pgvector on a staging copy and embed a 10% sample of the corpus.</li><li>Label 50 real support queries with the articles that should come back.</li><li>Measure recall at 10 and p95 latency with and without filters; tune <code>ef_search</code>.</li><li>Wrap retrieval in a <code>search(query, filters)</code> function so the store is replaceable.</li><li>Log the result as an issue if it misses the target, and revisit Qdrant as the first alternative.</li></ol>
+<h2 id="sources">Sources<a class="headerlink" href="#sources" title="Link to this section">#</a></h2>
+<ol><li>pgvector README, <a href="https://github.com/pgvector/pgvector" target="_blank" rel="noopener noreferrer">https://github.com/pgvector/pgvector</a> (accessed 2026-10-01)</li><li>sqlite-vec README, <a href="https://github.com/asg017/sqlite-vec" target="_blank" rel="noopener noreferrer">https://github.com/asg017/sqlite-vec</a> (accessed 2026-10-01)</li><li>Qdrant documentation, <a href="https://qdrant.tech/documentation/" target="_blank" rel="noopener noreferrer">https://qdrant.tech/documentation/</a> (accessed 2026-10-01)</li><li>Chroma documentation, <a href="https://docs.trychroma.com/" target="_blank" rel="noopener noreferrer">https://docs.trychroma.com/</a> (accessed 2026-10-01)</li><li>Pinecone documentation, <a href="https://docs.pinecone.io/" target="_blank" rel="noopener noreferrer">https://docs.pinecone.io/</a> (accessed 2026-10-01)</li></ol></article>
+</div>
+<footer>rendered 2026-10-13T12:05:10-05:00 &middot; research renderer</footer>
+</div>
+</body>
+</html>

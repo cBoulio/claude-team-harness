@@ -1,0 +1,33 @@
+# Each app is its own git repo; the workspace repo only tracks the registry
+apps/*
+!apps/REGISTRY.md
+
+# Workspace logs (written by .claude/hooks/log_event.py and log_issue.py)
+/errors.json
+/sessions.json
+/registry.json
+/*.lock
+/*.corrupt-*.json
+/.*.tmp
+.claude/hooks/hook-errors.log
+__pycache__/
+
+# Generated research pages (rebuild with: python .claude/hooks/render_research.py --all)
+research/site/
+
+# Personal Claude Code settings
+.claude/settings.local.json
+
+# Secrets
+.env
+.env.*
+!.env.example
+.dev.vars
+
+# Python
+.venv/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
